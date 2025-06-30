@@ -5,26 +5,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 type MascotProps = {
   eyeTargetX: number;
   eyeTargetY: number;
-  isSleeping: boolean;
-  isWinking: boolean;
+  isHiding: boolean;
   isError: boolean;
 };
 
 const spring = { type: 'spring', stiffness: 200, damping: 20 };
 const transition = { duration: 0.2 };
-const exit = { opacity: 0, transition };
-const animate = { opacity: 1, transition };
+const exit = { opacity: 0, scale: 0.9, transition };
+const animate = { opacity: 1, scale: 1, transition };
 
-export function Mascot({ eyeTargetX, eyeTargetY, isSleeping, isWinking, isError }: MascotProps) {
+export function Mascot({ eyeTargetX, eyeTargetY, isHiding, isError }: MascotProps) {
   const pupilX = -1.5 + eyeTargetX * 3;
   const pupilY = -1.5 + eyeTargetY * 3;
 
   const State = () => {
     if (isError) return <ErrorState />;
-    if (isWinking) return <WinkingState pupilX={pupilX} pupilY={pupilY} />;
-    if (isSleeping) return <SleepingState />;
+    if (isHiding) return <HidingState />;
     return <DefaultState pupilX={pupilX} pupilY={pupilY} />;
-  }
+  };
 
   return (
     <div className="relative w-[120px] h-[120px]">
@@ -41,7 +39,7 @@ export function Mascot({ eyeTargetX, eyeTargetY, isSleeping, isWinking, isError 
             <stop offset="90%" stopColor="#EAEAEA" />
           </radialGradient>
            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+            <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
             <feMerge>
               <feMergeNode in="coloredBlur"/>
               <feMergeNode in="SourceGraphic"/>
@@ -50,7 +48,7 @@ export function Mascot({ eyeTargetX, eyeTargetY, isSleeping, isWinking, isError 
         </defs>
 
         {/* Head and Ears */}
-        <g filter="url(#glow)">
+        <g>
             <motion.circle cx="9" cy="13" r="6" fill="url(#bearGradient)" />
             <motion.circle cx="31" cy="13" r="6" fill="url(#bearGradient)" />
             <motion.circle cx="20" cy="22" r="17" fill="url(#bearGradient)" />
@@ -63,7 +61,7 @@ export function Mascot({ eyeTargetX, eyeTargetY, isSleeping, isWinking, isError 
         <motion.path d="M 20 25 C 19 24, 21 24, 20 25 L 18 27 L 22 27 Z" fill="#4A3F35" />
 
         <AnimatePresence mode="wait" initial={false}>
-          <motion.g key={isError ? 'error' : isWinking ? 'winking' : isSleeping ? 'sleeping' : 'default'}>
+          <motion.g key={isError ? 'error' : isHiding ? 'hiding' : 'default'}>
             <State />
           </motion.g>
         </AnimatePresence>
@@ -86,26 +84,17 @@ const DefaultState = ({pupilX, pupilY}: {pupilX: number, pupilY: number}) => (
         </motion.g>
         {/* Mouth */}
         <motion.path d="M 17 30 q 3 -1 6 0" stroke="#4A3F35" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+        {/* Paws Down */}
+        <motion.path d="M7 32 C 3 32, 2 28, 6 27" fill="url(#bearGradient)" stroke="#C0C0C0" strokeWidth="0.3" initial={{ y: 0 }} animate={{ y: 0 }} transition={spring} />
+        <motion.path d="M33 32 C 37 32, 38 28, 34 27" fill="url(#bearGradient)" stroke="#C0C0C0" strokeWidth="0.3" initial={{ y: 0 }} animate={{ y: 0 }} transition={spring} />
     </motion.g>
 )
 
-const SleepingState = () => (
+const HidingState = () => (
     <motion.g initial={{ opacity: 0 }} animate={animate} exit={exit}>
-        <motion.path d="M 13,21.5 a 2.5,2.5 0 0,1 4,0" stroke="#2E2E2E" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
-        <motion.path d="M 23,21.5 a 2.5,2.5 0 0,1 4,0" stroke="#2E2E2E" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
-        <motion.path d="M 17 30 q 3 -1 6 0" stroke="#4A3F35" strokeWidth="0.7" fill="none" strokeLinecap="round" />
-    </motion.g>
-)
-
-const WinkingState = ({pupilX, pupilY}: {pupilX: number, pupilY: number}) => (
-    <motion.g initial={{ opacity: 0 }} animate={animate} exit={exit}>
-        {/* Left Eye Open */}
-        <motion.g transform={`translate(${pupilX * 0.3}, ${pupilY * 0.3})`} transition={spring}>
-            <circle cx="15" cy="21" r="2.5" fill="#2E2E2E" />
-            <circle cx="14" cy="20" r="0.75" fill="white" />
-        </motion.g>
-        {/* Right Eye Wink */}
-        <motion.path d="M 23,21.5 a 2.5,2.5 0 0,0 4,0" stroke="#2E2E2E" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+        {/* Paws Up */}
+        <motion.path d="M15 22 C 10 24, 8 18, 14 18" fill="url(#bearGradient)" stroke="#C0C0C0" strokeWidth="0.3" initial={{ y: 10, rotate: -15 }} animate={{ y: 0, rotate: 0 }} transition={spring} />
+        <motion.path d="M25 22 C 30 24, 32 18, 26 18" fill="url(#bearGradient)" stroke="#C0C0C0" strokeWidth="0.3" initial={{ y: 10, rotate: 15 }} animate={{ y: 0, rotate: 0 }} transition={spring} />
         {/* Mouth */}
         <motion.path d="M 17 30 q 3 1.5 6 0" stroke="#4A3F35" strokeWidth="0.7" fill="none" strokeLinecap="round" />
     </motion.g>
