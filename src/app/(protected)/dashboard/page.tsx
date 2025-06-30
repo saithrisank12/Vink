@@ -1,37 +1,16 @@
 'use client';
-import { useState, Suspense } from 'react';
+import { Suspense } from 'react';
 import { 
-  Scan, 
   BarChart3, 
   ShieldAlert, 
-  Voicemail,
-  FileLock,
-  MicOff,
-  VideoOff,
-  History,
   ShieldCheck,
-  Ban
 } from 'lucide-react';
 import { StatCard } from '@/components/vink/dashboard/stat-card';
 import { ThreatsChart } from '@/components/vink/dashboard/threats-chart';
-import { Button } from '@/components/ui/button';
-import { ThreatAlertModal } from '@/components/vink/threat-alert-modal';
 import { FeedbackTooltip } from '@/components/vink/dashboard/feedback-tooltip';
-import type { ClassifyMessageOutput } from '@/ai/flows/classify-message';
 import { NetworkStatus } from '@/components/vink/dashboard/network-status';
 
 export default function DashboardPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState<ClassifyMessageOutput | null>(null);
-
-  const handleQuickScan = () => {
-    setModalContent({
-        riskLevel: 'Dangerous',
-        explanation: 'A simulated phishing attempt was detected and blocked during the quick scan.'
-    });
-    setIsModalOpen(true);
-  };
-  
   return (
     <div className="w-full animate-fade-in space-y-8">
       <header>
@@ -39,100 +18,34 @@ export default function DashboardPage() {
         <p className="text-muted-foreground">Real-time network monitoring and threat analysis.</p>
       </header>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <FeedbackTooltip message="Blocked 1 suspicious screen cast & 2 risky file links.">
-              <StatCard
-                title="Threats Detected"
-                icon={ShieldAlert}
-                className="h-full"
-              >
-                <div className="h-64">
-                  <Suspense fallback={<div>Loading chart...</div>}>
-                    <ThreatsChart />
-                  </Suspense>
-                </div>
-              </StatCard>
-            </FeedbackTooltip>
+      <FeedbackTooltip message="Your device is currently Safe — no active threats.">
+          <StatCard title="Security Status" icon={ShieldCheck} className="flex flex-col items-center justify-center min-h-[300px]">
+              <NetworkStatus />
+          </StatCard>
+      </FeedbackTooltip>
 
-            <FeedbackTooltip message="Just scanned 482 packets — no intrusions found.">
-              <StatCard title="Live Packets Analyzed" icon={BarChart3}>
-                <div className="text-4xl font-bold">482</div>
-                <p className="text-xs text-muted-foreground">No intrusions found</p>
-              </StatCard>
-            </FeedbackTooltip>
-
-            <FeedbackTooltip message="Stopped a fake login page from opening via browser tab.">
-                <StatCard title="Phishing Attempts" icon={Ban}>
-                    <div className="text-4xl font-bold">1</div>
-                    <p className="text-xs text-muted-foreground">Login Page Blocked</p>
-                </StatCard>
-            </FeedbackTooltip>
-
-            <FeedbackTooltip message="Prevented 1 app from accessing your microphone.">
-                <StatCard title="Spyware Watch" icon={MicOff}>
-                    <div className="text-4xl font-bold">1</div>
-                    <p className="text-xs text-muted-foreground">Mic Access Blocked</p>
-                </StatCard>
-            </FeedbackTooltip>
-        </div>
-
-        <FeedbackTooltip message="Your device is currently Safe — no active threats.">
-            <StatCard title="Security Status" icon={ShieldCheck} className="flex flex-col items-center justify-center min-h-[300px] lg:h-full">
-                <NetworkStatus />
-            </StatCard>
-        </FeedbackTooltip>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <FeedbackTooltip message="AI just flagged 1 deepfake video and blocked it instantly.">
-            <StatCard title="AI Scan Summary" icon={FileLock}>
-                <div className="text-4xl font-bold">1</div>
-                <p className="text-xs text-muted-foreground">Deepfake Blocked</p>
-            </StatCard>
-        </FeedbackTooltip>
-
-        <FeedbackTooltip message="Logged 3 events in the last 10 minutes — tap to view.">
-            <StatCard title="Threat Log" icon={History}>
-                <div className="text-4xl font-bold">3</div>
-                <p className="text-xs text-muted-foreground">New Events</p>
-            </StatCard>
-        </FeedbackTooltip>
-        
-        <FeedbackTooltip message="Voice pattern matched known scam — muted and blocked.">
-          <StatCard title="Voice Clone Detector" icon={Voicemail}>
-            <div className="text-4xl font-bold">1</div>
-            <p className="text-xs text-muted-foreground">Scam Muted</p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <FeedbackTooltip message="Just scanned 482 packets — no intrusions found.">
+          <StatCard title="Live Packets Analyzed" icon={BarChart3}>
+            <div className="text-4xl font-bold">482</div>
+            <p className="text-xs text-muted-foreground">No intrusions found</p>
           </StatCard>
         </FeedbackTooltip>
 
-        <FeedbackTooltip message="Blocked a graphic image auto-casting from unknown IP.">
-            <StatCard title="Fake Media Shield" icon={VideoOff}>
-                <div className="text-4xl font-bold">1</div>
-                <p className="text-xs text-muted-foreground">Media Blocked</p>
-            </StatCard>
-        </FeedbackTooltip>
-
-        <FeedbackTooltip message="Finished in 4.2 seconds — all apps verified safe.">
-          <StatCard title="Quick Scan" icon={Scan}>
-            <div className="flex flex-col items-start justify-center gap-4 h-full">
-              <p className="text-muted-foreground text-sm">
-                All apps verified safe.
-              </p>
-              <Button size="sm" className="font-bold" onClick={handleQuickScan}>
-                <Scan className="mr-2 h-4 w-4" />
-                Scan Again
-              </Button>
+        <FeedbackTooltip message="Blocked 1 suspicious screen cast & 2 risky file links.">
+          <StatCard
+            title="Threats Detected"
+            icon={ShieldAlert}
+            className="h-full"
+          >
+            <div className="h-64">
+              <Suspense fallback={<div>Loading chart...</div>}>
+                <ThreatsChart />
+              </Suspense>
             </div>
           </StatCard>
         </FeedbackTooltip>
       </div>
-
-      <ThreatAlertModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        threatDetails={modalContent}
-      />
     </div>
   );
 }
