@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { LogOut } from 'lucide-react';
-import { TestLab } from "@/components/vink/settings/test-lab";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -44,8 +43,8 @@ export default function SettingsPage() {
     return (
         <div className="w-full animate-fade-in space-y-8">
             <header>
-                <h1 className="text-3xl font-bold font-headline">Settings & Test Lab</h1>
-                <p className="text-muted-foreground">Customize your protection and test our AI.</p>
+                <h1 className="text-3xl font-bold font-headline">Settings</h1>
+                <p className="text-muted-foreground">Customize your protection settings.</p>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -85,8 +84,6 @@ export default function SettingsPage() {
                     </CardContent>
                 </Card>
             </div>
-
-            <TestLab />
             
             <Card className="glass-card">
                 <CardHeader>

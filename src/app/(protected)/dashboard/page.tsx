@@ -9,6 +9,7 @@ import { StatCard } from '@/components/vink/dashboard/stat-card';
 import { ThreatsChart } from '@/components/vink/dashboard/threats-chart';
 import { FeedbackTooltip } from '@/components/vink/dashboard/feedback-tooltip';
 import { NetworkStatus } from '@/components/vink/dashboard/network-status';
+import { TestLab } from '@/components/vink/settings/test-lab';
 
 export default function DashboardPage() {
   return (
@@ -46,6 +47,8 @@ export default function DashboardPage() {
           </StatCard>
         </FeedbackTooltip>
       </div>
+
+      <TestLab />
     </div>
   );
 }
