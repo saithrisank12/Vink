@@ -1,8 +1,13 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { LogOut } from 'lucide-react';
 import { TestLab } from "@/components/vink/settings/test-lab";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { Button } from '@/components/ui/button';
 
 function SettingsToggle({ id, label, description, defaultChecked = true }: { id: string, label: string, description: string, defaultChecked?: boolean }) {
     return (
@@ -29,6 +34,13 @@ function UsageBar({ label, value, colorClass }: { label: string, value: number, 
 }
 
 export default function SettingsPage() {
+    const router = useRouter();
+
+    const handleLogout = () => {
+        localStorage.removeItem('vink-auth');
+        router.push('/');
+    };
+
     return (
         <div className="w-full animate-fade-in space-y-8">
             <header>
@@ -75,6 +87,19 @@ export default function SettingsPage() {
             </div>
 
             <TestLab />
+            
+            <Card className="glass-card">
+                <CardHeader>
+                    <CardTitle>Account</CardTitle>
+                    <CardDescription>Manage your account settings and preferences.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Button variant="destructive" onClick={handleLogout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sign Out
+                    </Button>
+                </CardContent>
+            </Card>
         </div>
     )
 }
