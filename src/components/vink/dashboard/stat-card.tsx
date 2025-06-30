@@ -11,7 +11,7 @@ type StatCardProps = {
 
 export function StatCard({ title, icon: Icon, children, className }: StatCardProps) {
   return (
-    <Card className={cn("glass-card", className)}>
+    <Card className={cn("glass-card cursor-pointer transition-transform hover:scale-[1.02]", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
         <Icon className="h-5 w-5 text-primary" />
