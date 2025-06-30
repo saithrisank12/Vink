@@ -39,7 +39,7 @@ export default function DashboardPage() {
         <FeedbackTooltip message={livePacketMessages}>
           <StatCard title="Live Packets Analyzed" icon={BarChart3}>
             <div className="text-4xl font-bold">482</div>
-            <p className="text-xs text-muted-foreground">No intrusions found</p>
+            <p className="text-xs text-muted-foreground">Packets processed per second</p>
           </StatCard>
         </FeedbackTooltip>
 
