@@ -8,8 +8,7 @@ import { Mascot } from './mascot';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
-import { Checkbox } from '../ui/checkbox';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 export function SignInForm() {
   const router = useRouter();
@@ -64,14 +63,18 @@ export function SignInForm() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <div className="bg-card text-card-foreground flex w-full flex-col items-center rounded-2xl p-8 gap-6 shadow-lg border">
-        <div className="w-36 h-36 rounded-full border bg-cyan-50 overflow-hidden">
-            <Mascot 
-              eyeTargetX={eyeTarget.x} 
-              eyeTargetY={eyeTarget.y} 
-              isHiding={isHiding}
-            />
+      <div className="bg-card text-card-foreground flex w-full flex-col items-center rounded-2xl p-8 gap-6 shadow-2xl border border-primary/20">
+        <div className="text-center mb-2">
+            <h1 className="font-headline text-3xl font-bold text-primary tracking-wider">VINK</h1>
+            <p className="text-muted-foreground text-md -mt-1">Cyber Guardian</p>
         </div>
+        
+        <Mascot 
+            eyeTargetX={eyeTarget.x} 
+            eyeTargetY={eyeTarget.y} 
+            isHiding={isHiding}
+        />
+
         <form onSubmit={handleLogin} className="w-full space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -79,7 +82,7 @@ export function SignInForm() {
               ref={emailInputRef}
               id="email"
               type="email"
-              placeholder="youremail@gamil.com"
+              placeholder="Enter your email"
               value={email}
               onChange={handleEmailChange}
               onFocus={() => setIsHiding(false)}
@@ -99,10 +102,16 @@ export function SignInForm() {
                 onBlur={() => setIsHiding(false)}
                 required
               />
-            </div>
-             <div className="flex items-center space-x-2 justify-end pt-1">
-                <Checkbox id="show" checked={showPassword} onCheckedChange={(checked) => setShowPassword(!!checked)} />
-                <Label htmlFor="show" className="text-sm font-normal text-muted-foreground">Show</Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute inset-y-0 right-0 h-full text-muted-foreground hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label="Toggle password visibility"
+              >
+                {showPassword ? <EyeOff /> : <Eye />}
+              </Button>
             </div>
           </div>
 
@@ -124,15 +133,17 @@ export function SignInForm() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 20 }}
                   >
-                    Log in
+                    Log In
                   </motion.span>
               )}
             </AnimatePresence>
           </Button>
 
-          <div className="mt-4 text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
-            <Link href="/signup" className="font-semibold text-primary hover:underline">
+          <div className="mt-4 flex justify-between text-sm">
+            <Link href="#" className="font-semibold text-primary/80 hover:text-primary">
+              Forgot Password?
+            </Link>
+            <Link href="/signup" className="font-semibold text-primary/80 hover:text-primary">
               Sign Up
             </Link>
           </div>

@@ -105,7 +105,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen w-full md:pl-64">
+    <div className="min-h-screen w-full md:pl-64 bg-background">
       {isMobile ? <MobileNav pathname={pathname} /> : <DesktopNav pathname={pathname} />}
       <main className="flex flex-1 flex-col p-4 md:p-8 pb-24 md:pb-8">
         {children}

@@ -19,8 +19,6 @@ export function SignUpForm() {
 
   const [eyeTarget, setEyeTarget] = useState({ x: 0.5, y: 0.5 });
   const [isHiding, setIsHiding] = useState(false);
-  const [isWinking, setIsWinking] = useState(false);
-  const [isError, setIsError] = useState(false);
   
   const emailInputRef = useRef<HTMLInputElement>(null);
 
@@ -39,15 +37,6 @@ export function SignUpForm() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  useEffect(() => {
-    let winkTimeout: NodeJS.Timeout;
-    if (email.length > 0 && password.length > 0 && !isWinking) {
-      setIsWinking(true);
-      winkTimeout = setTimeout(() => setIsWinking(false), 1500);
-    }
-    return () => clearTimeout(winkTimeout);
-  }, [email, password, isWinking]);
-
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -61,13 +50,10 @@ export function SignUpForm() {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setEmail(value);
-    setIsError(false);
-    setEyeTarget(prev => ({ ...prev, x: Math.min(value.length / 20, 1) }));
   }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    setIsError(false);
   }
 
   return (
@@ -77,13 +63,11 @@ export function SignUpForm() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.5 }}
     >
-      <div className="bg-card/80 backdrop-blur-sm text-card-foreground flex w-full flex-col items-center rounded-2xl p-8 gap-6 shadow-2xl border border-primary/20">
+      <div className="bg-card text-card-foreground flex w-full flex-col items-center rounded-2xl p-8 gap-6 shadow-2xl border border-primary/20">
         <Mascot 
           eyeTargetX={eyeTarget.x} 
           eyeTargetY={eyeTarget.y} 
           isHiding={isHiding}
-          isWinking={isWinking}
-          isError={isError} 
         />
         <form onSubmit={handleSignUp} className="w-full space-y-4">
           <div className="space-y-2">
