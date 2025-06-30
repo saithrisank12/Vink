@@ -8,7 +8,8 @@ import { Mascot } from './mascot';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { Checkbox } from '../ui/checkbox';
 
 export function SignInForm() {
   const router = useRouter();
@@ -19,7 +20,6 @@ export function SignInForm() {
 
   const [eyeTarget, setEyeTarget] = useState({ x: 0.5, y: 0.5 });
   const [isHiding, setIsHiding] = useState(false);
-  const [isError, setIsError] = useState(false);
   
   const emailInputRef = useRef<HTMLInputElement>(null);
 
@@ -43,27 +43,18 @@ export function SignInForm() {
     setIsLoading(true);
     // Simulate API call
     setTimeout(() => {
-      // Simulate error for demo
-      if (password.toLowerCase() === 'error') {
-        setIsError(true);
-        setIsLoading(false);
-        setTimeout(() => setIsError(false), 2500);
-      } else {
-        localStorage.setItem('vink-auth', 'true');
-        router.push('/dashboard');
-      }
+      localStorage.setItem('vink-auth', 'true');
+      router.push('/dashboard');
     }, 1500);
   };
   
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setEmail(value);
-    setIsError(false);
   }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    setIsError(false);
   }
 
   return (
@@ -71,23 +62,24 @@ export function SignInForm() {
       className="w-full max-w-sm"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.5 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <div className="bg-card/80 backdrop-blur-sm text-card-foreground flex w-full flex-col items-center rounded-2xl p-8 gap-6 shadow-2xl border border-primary/20">
-        <Mascot 
-          eyeTargetX={eyeTarget.x} 
-          eyeTargetY={eyeTarget.y} 
-          isHiding={isHiding}
-          isError={isError} 
-        />
+      <div className="bg-card text-card-foreground flex w-full flex-col items-center rounded-2xl p-8 gap-6 shadow-lg border">
+        <div className="w-36 h-36 rounded-full border bg-cyan-50 overflow-hidden">
+            <Mascot 
+              eyeTargetX={eyeTarget.x} 
+              eyeTargetY={eyeTarget.y} 
+              isHiding={isHiding}
+            />
+        </div>
         <form onSubmit={handleLogin} className="w-full space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email Address</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               ref={emailInputRef}
               id="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="youremail@gamil.com"
               value={email}
               onChange={handleEmailChange}
               onFocus={() => setIsHiding(false)}
@@ -107,26 +99,14 @@ export function SignInForm() {
                 onBlur={() => setIsHiding(false)}
                 required
               />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute inset-y-0 right-0 h-12 text-muted-foreground hover:bg-transparent"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label="Toggle password visibility"
-              >
-                {showPassword ? <EyeOff /> : <Eye />}
-              </Button>
+            </div>
+             <div className="flex items-center space-x-2 justify-end pt-1">
+                <Checkbox id="show" checked={showPassword} onCheckedChange={(checked) => setShowPassword(!!checked)} />
+                <Label htmlFor="show" className="text-sm font-normal text-muted-foreground">Show</Label>
             </div>
           </div>
 
-          <div className="text-right text-sm">
-            <Link href="#" className="font-medium text-primary hover:underline">
-              Forgot Password?
-            </Link>
-          </div>
-
-          <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isLoading}>
+          <Button type="submit" className="w-full h-11 text-base font-bold" disabled={isLoading}>
             <AnimatePresence mode="wait">
               {isLoading ? (
                   <motion.div
@@ -144,7 +124,7 @@ export function SignInForm() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 20 }}
                   >
-                    Log In
+                    Log in
                   </motion.span>
               )}
             </AnimatePresence>
