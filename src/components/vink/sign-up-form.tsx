@@ -18,7 +18,7 @@ export function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [eyeTarget, setEyeTarget] = useState({ x: 0.5, y: 0.5 });
-  const [isSleeping, setIsSleeping] = useState(false);
+  const [isHiding, setIsHiding] = useState(false);
   const [isWinking, setIsWinking] = useState(false);
   const [isError, setIsError] = useState(false);
   
@@ -41,12 +41,12 @@ export function SignUpForm() {
 
   useEffect(() => {
     let winkTimeout: NodeJS.Timeout;
-    if (email.length > 0 && password.length > 0) {
+    if (email.length > 0 && password.length > 0 && !isWinking) {
       setIsWinking(true);
       winkTimeout = setTimeout(() => setIsWinking(false), 1500);
     }
     return () => clearTimeout(winkTimeout);
-  }, [email, password]);
+  }, [email, password, isWinking]);
 
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,11 +77,11 @@ export function SignUpForm() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.5 }}
     >
-      <div className="bg-card/80 backdrop-blur-sm text-card-foreground flex w-full flex-col items-center rounded-2xl p-8 gap-6 shadow-2xl border border-white/10">
+      <div className="bg-card/80 backdrop-blur-sm text-card-foreground flex w-full flex-col items-center rounded-2xl p-8 gap-6 shadow-2xl border border-primary/20">
         <Mascot 
           eyeTargetX={eyeTarget.x} 
           eyeTargetY={eyeTarget.y} 
-          isSleeping={isSleeping} 
+          isHiding={isHiding}
           isWinking={isWinking}
           isError={isError} 
         />
@@ -95,8 +95,7 @@ export function SignUpForm() {
               placeholder="yourname@example.com"
               value={email}
               onChange={handleEmailChange}
-              onFocus={() => setIsSleeping(false)}
-              onBlur={() => setIsSleeping(true)}
+              onFocus={() => setIsHiding(false)}
               required
               className="h-12 text-base"
             />
@@ -110,8 +109,8 @@ export function SignUpForm() {
                 placeholder="••••••••"
                 value={password}
                 onChange={handlePasswordChange}
-                onFocus={() => setIsSleeping(true)}
-                onBlur={() => setIsSleeping(false)}
+                onFocus={() => setIsHiding(true)}
+                onBlur={() => setIsHiding(false)}
                 required
                 className="h-12 text-base pr-12"
               />
@@ -119,7 +118,7 @@ export function SignUpForm() {
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="absolute inset-y-0 right-0 text-muted-foreground hover:bg-transparent"
+                className="absolute inset-y-0 right-0 h-12 text-muted-foreground hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label="Toggle password visibility"
               >
