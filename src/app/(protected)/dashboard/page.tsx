@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, Suspense } from 'react';
-import { Scan, BarChart3 } from 'lucide-react';
+import { Scan, BarChart3, ShieldAlert } from 'lucide-react';
 import { NetworkStatus } from '@/components/vink/dashboard/network-status';
 import { StatCard } from '@/components/vink/dashboard/stat-card';
 import { ThreatsChart } from '@/components/vink/dashboard/threats-chart';
