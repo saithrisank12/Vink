@@ -79,17 +79,19 @@ function DesktopNav({ pathname }: { pathname: string }) {
 }
 
 function MobileNav({ pathname }: { pathname: string }) {
+  const router = useRouter();
+  const handleLogout = () => {
+    localStorage.removeItem('vink-auth');
+    router.push('/');
+  };
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-10 md:hidden h-20 glass-card border-t rounded-t-2xl">
       <div className="flex justify-around items-center h-full">
         {navItems.map((item) => (
           <NavLink key={item.href} {...item} isActive={pathname === item.href} />
         ))}
-        <button onClick={() => {
-            const router = useRouter();
-            localStorage.removeItem('vink-auth');
-            router.push('/');
-        }} className="flex flex-col items-center gap-1 px-3 py-2 text-muted-foreground">
+        <button onClick={handleLogout} className="flex flex-col items-center gap-1 px-3 py-2 text-muted-foreground">
             <LogOut className="w-6 h-6" />
             <span className="text-xs">Log Out</span>
         </button>

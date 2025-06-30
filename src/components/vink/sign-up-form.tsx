@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 
-export function SignInForm() {
+export function SignUpForm() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,20 +48,13 @@ export function SignInForm() {
     return () => clearTimeout(winkTimeout);
   }, [email, password]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call
+    // Simulate API call for signup
     setTimeout(() => {
-      // Simulate error for demo
-      if (password.toLowerCase() === 'error') {
-        setIsError(true);
-        setIsLoading(false);
-        setTimeout(() => setIsError(false), 2500);
-      } else {
-        localStorage.setItem('vink-auth', 'true');
-        router.push('/dashboard');
-      }
+      localStorage.setItem('vink-auth', 'true');
+      router.push('/dashboard');
     }, 1500);
   };
   
@@ -69,7 +62,6 @@ export function SignInForm() {
     const { value } = e.target;
     setEmail(value);
     setIsError(false);
-    // Simple caret tracking simulation
     setEyeTarget(prev => ({ ...prev, x: Math.min(value.length / 20, 1) }));
   }
 
@@ -93,7 +85,7 @@ export function SignInForm() {
           isWinking={isWinking}
           isError={isError} 
         />
-        <form onSubmit={handleLogin} className="w-full space-y-4">
+        <form onSubmit={handleSignUp} className="w-full space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email Address</Label>
             <Input
@@ -136,12 +128,6 @@ export function SignInForm() {
             </div>
           </div>
 
-          <div className="text-right text-sm">
-            <Link href="#" className="font-medium text-primary hover:underline">
-              Forgot Password?
-            </Link>
-          </div>
-
           <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isLoading}>
             <AnimatePresence mode="wait">
               {isLoading ? (
@@ -160,16 +146,16 @@ export function SignInForm() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 20 }}
                   >
-                    Log In
+                    Create Account
                   </motion.span>
               )}
             </AnimatePresence>
           </Button>
 
           <div className="mt-4 text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
-            <Link href="/signup" className="font-semibold text-primary hover:underline">
-              Sign Up
+            Already have an account?{" "}
+            <Link href="/" className="font-semibold text-primary hover:underline">
+              Log In
             </Link>
           </div>
         </form>
