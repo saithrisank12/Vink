@@ -6,11 +6,25 @@ type MascotProps = {
   eyeTargetX: number;
   eyeTargetY: number;
   isSleeping: boolean;
+  isWinking: boolean;
+  isError: boolean;
 };
 
-export function Mascot({ eyeTargetX, eyeTargetY, isSleeping }: MascotProps) {
+const spring = { type: 'spring', stiffness: 200, damping: 20 };
+const transition = { duration: 0.2 };
+const exit = { opacity: 0, transition };
+const animate = { opacity: 1, transition };
+
+export function Mascot({ eyeTargetX, eyeTargetY, isSleeping, isWinking, isError }: MascotProps) {
   const pupilX = -1.5 + eyeTargetX * 3;
   const pupilY = -1.5 + eyeTargetY * 3;
+
+  const State = () => {
+    if (isError) return <ErrorState />;
+    if (isWinking) return <WinkingState pupilX={pupilX} pupilY={pupilY} />;
+    if (isSleeping) return <SleepingState />;
+    return <DefaultState pupilX={pupilX} pupilY={pupilY} />;
+  }
 
   return (
     <div className="relative w-[120px] h-[120px]">
@@ -26,66 +40,87 @@ export function Mascot({ eyeTargetX, eyeTargetY, isSleeping }: MascotProps) {
             <stop offset="0%" stopColor="#FFFFFF" />
             <stop offset="90%" stopColor="#EAEAEA" />
           </radialGradient>
+           <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
         </defs>
 
-        {/* Ears */}
-        <motion.circle cx="10" cy="12" r="6" fill="url(#bearGradient)" stroke="#D1D1D1" strokeWidth="0.5" />
-        <motion.circle cx="30" cy="12" r="6" fill="url(#bearGradient)" stroke="#D1D1D1" strokeWidth="0.5" />
-        <motion.circle cx="11" cy="13" r="4.5" fill="#FFFFFF" />
-        <motion.circle cx="29" cy="13" r="4.5" fill="#FFFFFF" />
-        
-        {/* Head */}
-        <motion.circle cx="20" cy="23" r="16" fill="url(#bearGradient)" stroke="#D1D1D1" strokeWidth="0.5" />
+        {/* Head and Ears */}
+        <g filter="url(#glow)">
+            <motion.circle cx="9" cy="13" r="6" fill="url(#bearGradient)" />
+            <motion.circle cx="31" cy="13" r="6" fill="url(#bearGradient)" />
+            <motion.circle cx="20" cy="22" r="17" fill="url(#bearGradient)" />
+        </g>
+        <motion.circle cx="10" cy="14" r="4" fill="#fff" />
+        <motion.circle cx="30" cy="14" r="4" fill="#fff" />
 
-        {/* Muzzle */}
-        <motion.ellipse cx="20" cy="28" rx="9" ry="7" fill="white" stroke="#D1D1D1" strokeWidth="0.5" />
-        
-        {/* Nose */}
-        <motion.path d="M 20 26 C 19 25, 21 25, 20 26 L 18 28 L 22 28 Z" fill="#6B4F3A" />
+        {/* Muzzle and Nose */}
+        <motion.ellipse cx="20" cy="27" rx="9" ry="7" fill="#FFFFFF" />
+        <motion.path d="M 20 25 C 19 24, 21 24, 20 25 L 18 27 L 22 27 Z" fill="#4A3F35" />
 
-        {/* Mouth */}
-        <motion.path d="M 20 28.5 C 20 29, 18 31, 17 31" stroke="#6B4F3A" strokeWidth="0.5" fill="none" strokeLinecap="round" />
-        <motion.path d="M 20 28.5 C 20 29, 22 31, 23 31" stroke="#6B4F3A" strokeWidth="0.5" fill="none" strokeLinecap="round" />
-
-        <AnimatePresence>
-          {!isSleeping ? (
-            <motion.g
-              key="eyes-open"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { delay: 0.1 } }}
-              exit={{ opacity: 0 }}
-            >
-              {/* Left Eye */}
-              <motion.g
-                transform={`translate(${pupilX * 0.3}, ${pupilY * 0.3})`}
-                transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-              >
-                  <circle cx="15" cy="22" r="2.5" fill="#2E2E2E" />
-                  <circle cx="14" cy="21" r="0.75" fill="white" />
-              </motion.g>
-              
-              {/* Right Eye */}
-              <motion.g
-                transform={`translate(${pupilX * 0.3}, ${pupilY * 0.3})`}
-                transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-              >
-                  <circle cx="25" cy="22" r="2.5" fill="#2E2E2E" />
-                  <circle cx="24" cy="21" r="0.75" fill="white" />
-              </motion.g>
-            </motion.g>
-          ) : (
-            <motion.g
-              key="eyes-closed"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { delay: 0.1 } }}
-              exit={{ opacity: 0 }}
-            >
-              <motion.path d="M 13,22 a 2.5,2.5 0 0,1 4,0" stroke="#2E2E2E" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
-              <motion.path d="M 23,22 a 2.5,2.5 0 0,1 4,0" stroke="#2E2E2E" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
-            </motion.g>
-          )}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.g key={isError ? 'error' : isWinking ? 'winking' : isSleeping ? 'sleeping' : 'default'}>
+            <State />
+          </motion.g>
         </AnimatePresence>
       </motion.svg>
     </div>
   );
 }
+
+
+const DefaultState = ({pupilX, pupilY}: {pupilX: number, pupilY: number}) => (
+    <motion.g initial={{ opacity: 0 }} animate={animate} exit={exit}>
+        {/* Eyes */}
+        <motion.g transform={`translate(${pupilX * 0.3}, ${pupilY * 0.3})`} transition={spring}>
+            <circle cx="15" cy="21" r="2.5" fill="#2E2E2E" />
+            <circle cx="14" cy="20" r="0.75" fill="white" />
+        </motion.g>
+        <motion.g transform={`translate(${pupilX * 0.3}, ${pupilY * 0.3})`} transition={spring}>
+            <circle cx="25" cy="21" r="2.5" fill="#2E2E2E" />
+            <circle cx="24" cy="20" r="0.75" fill="white" />
+        </motion.g>
+        {/* Mouth */}
+        <motion.path d="M 17 30 q 3 -1 6 0" stroke="#4A3F35" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+    </motion.g>
+)
+
+const SleepingState = () => (
+    <motion.g initial={{ opacity: 0 }} animate={animate} exit={exit}>
+        <motion.path d="M 13,21.5 a 2.5,2.5 0 0,1 4,0" stroke="#2E2E2E" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+        <motion.path d="M 23,21.5 a 2.5,2.5 0 0,1 4,0" stroke="#2E2E2E" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+        <motion.path d="M 17 30 q 3 -1 6 0" stroke="#4A3F35" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+    </motion.g>
+)
+
+const WinkingState = ({pupilX, pupilY}: {pupilX: number, pupilY: number}) => (
+    <motion.g initial={{ opacity: 0 }} animate={animate} exit={exit}>
+        {/* Left Eye Open */}
+        <motion.g transform={`translate(${pupilX * 0.3}, ${pupilY * 0.3})`} transition={spring}>
+            <circle cx="15" cy="21" r="2.5" fill="#2E2E2E" />
+            <circle cx="14" cy="20" r="0.75" fill="white" />
+        </motion.g>
+        {/* Right Eye Wink */}
+        <motion.path d="M 23,21.5 a 2.5,2.5 0 0,0 4,0" stroke="#2E2E2E" strokeWidth="1.2" fill="none" strokeLinecap="round"/>
+        {/* Mouth */}
+        <motion.path d="M 17 30 q 3 1.5 6 0" stroke="#4A3F35" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+    </motion.g>
+)
+
+const ErrorState = () => (
+    <motion.g initial={{ opacity: 0 }} animate={animate} exit={exit}>
+        {/* Sad Eyes */}
+        <motion.g transform="translate(0, 0.5)">
+            <path d="M 13 19.5 c 1 -1 3 -1 4 0" stroke="#2E2E2E" strokeWidth="1" fill="none" strokeLinecap="round" />
+            <circle cx="15" cy="22" r="2.5" fill="#2E2E2E" />
+            <path d="M 23 19.5 c 1 -1 3 -1 4 0" stroke="#2E2E2E" strokeWidth="1" fill="none" strokeLinecap="round" />
+            <circle cx="25" cy="22" r="2.5" fill="#2E2E2E" />
+        </motion.g>
+        {/* Sad Mouth */}
+        <motion.path d="M 17 31 q 3 -1.5 6 0" stroke="#4A3F35" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+    </motion.g>
+)

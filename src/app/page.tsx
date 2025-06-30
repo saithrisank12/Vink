@@ -6,9 +6,12 @@ import { SignInForm } from '@/components/vink/sign-in-form';
 
 function VinkLogo() {
   return (
-    <h1 className="font-headline text-7xl font-bold text-primary animate-neon-pulse tracking-widest">
-      VINK
-    </h1>
+    <div className="text-center">
+      <h1 className="font-headline text-5xl font-bold text-primary tracking-widest">
+        VINK
+      </h1>
+      <p className="text-muted-foreground text-lg -mt-1">Cyber Guardian</p>
+    </div>
   );
 }
 

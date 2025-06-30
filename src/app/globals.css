@@ -4,63 +4,63 @@
 
 @layer base {
   :root {
-    --background: 227 48% 6%; /* #070B16 */
+    --background: 227 48% 6%; /* Midnight Navy */
     --foreground: 210 40% 98%;
 
-    --card: 227 48% 6%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 20% 98%;
+    --card-foreground: 222 47% 11%;
 
-    --popover: 227 48% 6%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 20% 98%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 181 100% 50%; /* #00F6FF */
-    --primary-foreground: 227 48% 10%;
+    --primary: 205 90% 55%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 220 15% 90%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 220 15% 90%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 181 100% 50% / 0.1;
-    --accent-foreground: 210 40% 98%;
+    --accent: 205 90% 55% / 0.1;
+    --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 100% 62%; /* #FF3B3B */
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 181 100% 50% / 0.1;
-    --input: 240 4% 16%;
-    --ring: 181 100% 50%;
+    --border: 220 13% 85%;
+    --input: 220 13% 85%;
+    --ring: 205 90% 55%;
 
     --radius: 0.75rem;
 
-    --chart-1: 181 100% 50%; /* electric cyan */
-    --chart-2: 266 100% 64%; /* ultra-violet pulse */
-    --chart-3: 60 100% 50%; /* yellow */
-    --chart-4: 0 100% 62%; /* alert red */
-    --chart-5: 210 40% 98%;
+    --chart-1: 205 90% 55%;
+    --chart-2: 266 100% 70%;
+    --chart-3: 45 90% 55%;
+    --chart-4: 0 84% 60%;
+    --chart-5: 222 47% 11%;
   }
 
   .dark {
     --background: 227 48% 6%;
     --foreground: 210 40% 98%;
-    --card: 227 48% 6%;
-    --card-foreground: 210 40% 98%;
-    --popover: 227 48% 6%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 181 100% 50%;
-    --primary-foreground: 227 48% 10%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 181 100% 50% / 0.1;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 100% 62%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 181 100% 50% / 0.1;
-    --input: 240 4% 16%;
-    --ring: 181 100% 50%;
+    --card: 220 20% 98%;
+    --card-foreground: 222 47% 11%;
+    --popover: 220 20% 98%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 205 90% 55%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 220 15% 90%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 220 15% 90%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 205 90% 55% / 0.1;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 13% 85%;
+    --input: 220 13% 85%;
+    --ring: 205 90% 55%;
   }
 }
 
@@ -76,7 +76,7 @@
 
 @layer utilities {
   .glass-card {
-    @apply bg-white/5 backdrop-blur-lg border border-primary/10 shadow-[0_8px_32px_0_rgba(0,246,255,0.1),inset_0_0_0_1px_hsl(var(--primary)/0.1)];
+    @apply bg-card text-card-foreground border border-border shadow-2xl;
   }
 
   .text-balance {
