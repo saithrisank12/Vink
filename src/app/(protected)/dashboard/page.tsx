@@ -11,6 +11,16 @@ import { FeedbackTooltip } from '@/components/vink/dashboard/feedback-tooltip';
 import { NetworkStatus } from '@/components/vink/dashboard/network-status';
 import { TestLab } from '@/components/vink/settings/test-lab';
 
+const livePacketMessages = [
+  "Scanning 1,240 live packets flowing through your network... No threats found.",
+  "Blocked 2 unauthorized casting attempts from IP 192.168.1.12.",
+  "Analyzed 976 data packets in the last 30 seconds — all clean.",
+  "DLNA protocol detected. Monitoring for screen-cast hijack attempts.",
+  "Stopped 1 smart TV trying to mirror your screen without permission.",
+  "Live traffic spike detected — inspecting 17 suspicious media packets.",
+  "All 4 connected devices are being monitored in real time.",
+];
+
 export default function DashboardPage() {
   return (
     <div className="w-full animate-fade-in space-y-8">
@@ -26,7 +36,7 @@ export default function DashboardPage() {
       </FeedbackTooltip>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <FeedbackTooltip message="Just scanned 482 packets — no intrusions found.">
+        <FeedbackTooltip message={livePacketMessages}>
           <StatCard title="Live Packets Analyzed" icon={BarChart3}>
             <div className="text-4xl font-bold">482</div>
             <p className="text-xs text-muted-foreground">No intrusions found</p>

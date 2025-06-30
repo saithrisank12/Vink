@@ -17,12 +17,12 @@ const CustomPopoverContent = React.forwardRef<
       align={align}
       sideOffset={sideOffset}
       className={cn(
-        'z-50 w-64 rounded-lg border border-primary bg-gray-900/90 p-3 text-cyan-200 shadow-md outline-none animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
-        'backdrop-blur-sm text-sm font-medium',
+        'z-50 w-72 rounded-lg border border-[#00F5FF] bg-gray-900/90 p-4 text-[#A8F6FF] shadow-md outline-none animate-in fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
+        'backdrop-blur-sm text-[15px] font-medium',
         className
       )}
       style={{
-        boxShadow: '0 0 15px hsl(var(--primary) / 0.5)',
+        boxShadow: '0 0 15px #00F5FF',
       }}
       {...props}
     />
@@ -32,27 +32,37 @@ CustomPopoverContent.displayName = 'CustomPopoverContent';
 
 type FeedbackTooltipProps = {
   children: React.ReactNode;
-  message: string;
+  message: string | string[];
 };
 
 export function FeedbackTooltip({ children, message }: FeedbackTooltipProps) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [displayMessage, setDisplayMessage] = React.useState('');
+
+  const pickMessage = React.useCallback(() => {
+    if (Array.isArray(message)) {
+      const randomIndex = Math.floor(Math.random() * message.length);
+      setDisplayMessage(message[randomIndex]);
+    } else {
+      setDisplayMessage(message);
+    }
+  }, [message]);
+
 
   React.useEffect(() => {
     if (isOpen) {
+      pickMessage();
       const timer = setTimeout(() => {
         setIsOpen(false);
       }, 4000);
       return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen, pickMessage]);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <CustomPopoverContent>
-        {message}
-      </CustomPopoverContent>
+      <CustomPopoverContent>{displayMessage}</CustomPopoverContent>
     </Popover>
   );
 }
