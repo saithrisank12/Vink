@@ -82,8 +82,8 @@ const DefaultState = ({pupilX, pupilY}: {pupilX: number, pupilY: number}) => (
             <circle cx="25" cy="21" r="2.5" fill="#2E2E2E" />
             <circle cx="24" cy="20" r="0.75" fill="white" />
         </motion.g>
-        {/* Mouth */}
-        <motion.path d="M 17 30 q 3 -1 6 0" stroke="#4A3F35" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+        {/* Smiling Mouth */}
+        <motion.path d="M 17 30 q 3 2 6 0" stroke="#4A3F35" strokeWidth="0.7" fill="none" strokeLinecap="round" />
         {/* Paws Down */}
         <motion.path d="M7 32 C 3 32, 2 28, 6 27" fill="url(#bearGradient)" stroke="#C0C0C0" strokeWidth="0.3" initial={{ y: 0 }} animate={{ y: 0 }} transition={spring} />
         <motion.path d="M33 32 C 37 32, 38 28, 34 27" fill="url(#bearGradient)" stroke="#C0C0C0" strokeWidth="0.3" initial={{ y: 0 }} animate={{ y: 0 }} transition={spring} />
@@ -92,11 +92,32 @@ const DefaultState = ({pupilX, pupilY}: {pupilX: number, pupilY: number}) => (
 
 const HidingState = () => (
     <motion.g initial={{ opacity: 0 }} animate={animate} exit={exit}>
-        {/* Paws Up */}
-        <motion.path d="M15 22 C 10 24, 8 18, 14 18" fill="url(#bearGradient)" stroke="#C0C0C0" strokeWidth="0.3" initial={{ y: 10, rotate: -15 }} animate={{ y: 0, rotate: 0 }} transition={spring} />
-        <motion.path d="M25 22 C 30 24, 32 18, 26 18" fill="url(#bearGradient)" stroke="#C0C0C0" strokeWidth="0.3" initial={{ y: 10, rotate: 15 }} animate={{ y: 0, rotate: 0 }} transition={spring} />
+        {/* Closed Eyes behind paws */}
+        <path d="M 14 23 c 1 -1.5 2 -1.5 3 0" stroke="#4A3F35" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+        <path d="M 24 23 c 1 -1.5 2 -1.5 3 0" stroke="#4A3F35" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+
         {/* Mouth */}
-        <motion.path d="M 17 30 q 3 1.5 6 0" stroke="#4A3F35" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+        <path d="M 18 31 q 2 1 4 0" stroke="#4A3F35" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+
+        {/* Paws covering eyes */}
+        <motion.path
+          d="M 16 22 C 10 24, 8 16, 15 16"
+          fill="url(#bearGradient)"
+          stroke="#C0C0C0"
+          strokeWidth="0.3"
+          initial={{ y: 10, rotate: -15 }}
+          animate={{ y: 0, rotate: 0 }}
+          transition={spring}
+        />
+        <motion.path
+          d="M 24 22 C 30 24, 32 16, 25 16"
+          fill="url(#bearGradient)"
+          stroke="#C0C0C0"
+          strokeWidth="0.3"
+          initial={{ y: 10, rotate: 15 }}
+          animate={{ y: 0, rotate: 0 }}
+          transition={spring}
+        />
     </motion.g>
 )
 
