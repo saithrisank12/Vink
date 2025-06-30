@@ -32,9 +32,9 @@ export function NetworkStatus() {
 
   const size = 256;
   const center = size / 2;
-  const radius = size / 2 - 20;
-  const dotCount = 10;
-  const dotAngle = 8; // spacing between dots
+  const radius = size / 2 - 20; // The radius of the main circle
+  const lineRadius = size / 2 - 40; // The length of the scanner lines
+  const lineCount = 12;
 
   return (
     <div className="relative w-64 h-64 flex items-center justify-center">
@@ -61,38 +61,38 @@ export function NetworkStatus() {
           }}
           style={{ filter: 'url(#neon-glow)' }}
         />
+
+        {/* Animated scanner lines */}
+        <motion.g
+          animate={{ rotate: -360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+          style={{ transformOrigin: `${center}px ${center}px` }}
+        >
+          {Array.from({ length: lineCount }).map((_, i) => (
+            <motion.line
+              key={i}
+              x1={center}
+              y1={center}
+              x2={center + lineRadius * Math.cos((i * 2 * Math.PI) / lineCount)}
+              y2={center + lineRadius * Math.sin((i * 2 * Math.PI) / lineCount)}
+              strokeWidth="2"
+              strokeDasharray="4 15" // length of dash and gap
+              initial={{ strokeDashoffset: 19 }}
+              animate={{
+                stroke: status === 'SECURE' ? 'hsl(var(--primary) / 0.5)' : 'hsl(var(--destructive) / 0.5)',
+                strokeDashoffset: [19, 0, 19]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: 'linear',
+                delay: i * (2 / lineCount) // Stagger the animation
+              }}
+            />
+          ))}
+        </motion.g>
       </svg>
       
-      {/* Animated dots container */}
-      <motion.div
-        className="absolute w-full h-full"
-        animate={{ rotate: 360 }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: 'linear',
-        }}
-      >
-        {/* A trail of dots */}
-        {Array.from({ length: dotCount }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute top-1/2 left-1/2 rounded-full"
-            style={{
-              width: `${(dotCount - i) / 2}px`,
-              height: `${(dotCount - i) / 2}px`,
-              // Position dots along the circle
-              transform: `translateX(-50%) translateY(-50%) rotate(${i * dotAngle}deg) translateX(${radius}px)`,
-              transformOrigin: '0px 0px',
-              opacity: 1 - i / (dotCount * 1.2), // Create a fading trail
-            }}
-            animate={{
-              backgroundColor: status === 'SECURE' ? 'hsl(var(--primary))' : 'hsl(var(--destructive))'
-            }}
-          />
-        ))}
-      </motion.div>
-
       {/* Center content */}
       <div className="z-10 flex flex-col items-center justify-center gap-2">
         <motion.div
