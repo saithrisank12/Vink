@@ -36,7 +36,12 @@ export async function generateSpeech(text: string) {
     
     try {
         const result = await generateSpeechFlow(text);
-        return result;
+        // Ensure we always return a consistent object, even if the AI flow fails.
+        if (result && typeof result.media === 'string') {
+            return result;
+        }
+        console.error("TTS flow returned an invalid result:", result);
+        return { media: '' };
     } catch (error) {
         console.error('Error generating speech:', error);
         return { media: '' };

@@ -79,11 +79,15 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
                     const playPromise = audio.play();
                     if (playPromise !== undefined) {
                         playPromise.catch(error => {
-                            console.error("Audio playback failed. This may be due to browser autoplay policies.", error);
+                            if (error.name === 'NotAllowedError') {
+                                console.log('Autoplay was prevented by the browser. User interaction is needed to play audio.');
+                            } else {
+                                console.error("An error occurred during audio playback:", error);
+                            }
                         });
                     }
                 } else {
-                     console.error("TTS generation failed, received no media.", response);
+                     console.log("TTS generation did not produce audio. Skipping playback.");
                 }
             } catch (error) {
                 console.error("Error generating or playing speech:", error);
