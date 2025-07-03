@@ -10,7 +10,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from '@/components/ui/alert-dialog';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ClassifyMessageOutput } from '@/ai/flows/classify-message';
 import { cn } from '@/lib/utils';
@@ -36,11 +36,10 @@ type ThreatAlertModalProps = {
 
 export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlertModalProps) {
     const router = useRouter();
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     useEffect(() => {
         if (isOpen && threatDetails) {
-            let audio: HTMLAudioElement | null = null;
-            
             try {
                 if (window.navigator.vibrate) {
                     window.navigator.vibrate(200);
@@ -50,6 +49,10 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
             }
             
             const playAudio = async () => {
+                if (audioRef.current) {
+                    audioRef.current.pause();
+                }
+
                 let textToSpeak = threatDetails.riskLevel === 'Safe' 
                     ? `Analysis Complete. ${threatDetails.explanation}`
                     : `${threatDetails.riskLevel} threat detected. ${threatDetails.explanation}`;
@@ -58,14 +61,22 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
 
                 if (selectedLanguage !== 'English') {
                     const translatedTextResult = await translateText({ text: textToSpeak, targetLanguage: selectedLanguage });
-                    textToSpeak = translatedTextResult
+                    textToSpeak = translatedTextResult;
                 }
                 
                 const response = await generateSpeech(textToSpeak);
                 if (response.media) {
-                    audio = new Audio(response.media);
-                    audio.play().catch(error => {
-                        console.error("Audio playback failed:", error);
+                    const audio = new Audio(response.media);
+                    audioRef.current = audio;
+                    
+                    audio.addEventListener('canplaythrough', () => {
+                        audio.play().catch(error => {
+                            console.error("Audio playback failed. This may be due to browser autoplay policies.", error);
+                        });
+                    });
+
+                    audio.addEventListener('error', (e) => {
+                        console.error("Error loading audio file:", e);
                     });
                 }
             };
@@ -78,11 +89,16 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
             
             return () => {
               clearTimeout(timer);
-              if (audio) {
-                  audio.pause();
-                  audio.src = '';
+              if (audioRef.current) {
+                  audioRef.current.pause();
+                  audioRef.current = null;
               }
             };
+        } else {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
+            }
         }
     }, [isOpen, threatDetails, onClose]);
 
