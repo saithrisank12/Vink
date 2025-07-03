@@ -39,7 +39,12 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     useEffect(() => {
-        if (isOpen && threatDetails) {
+        const playAudio = async () => {
+            if (!isOpen || !threatDetails) {
+                return;
+            }
+
+            // Vibrate device if supported
             try {
                 if (window.navigator.vibrate) {
                     window.navigator.vibrate(200);
@@ -48,59 +53,53 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
                 console.log("Vibration not supported");
             }
             
-            const playAudio = async () => {
-                if (audioRef.current) {
-                    audioRef.current.pause();
-                }
-
-                let textToSpeak = threatDetails.riskLevel === 'Safe' 
-                    ? `Analysis Complete. ${threatDetails.explanation}`
-                    : `${threatDetails.riskLevel} threat detected. ${threatDetails.explanation}`;
-                
-                const selectedLanguage = localStorage.getItem('vink-language') || 'English';
-
-                if (selectedLanguage !== 'English') {
-                    const translatedTextResult = await translateText({ text: textToSpeak, targetLanguage: selectedLanguage });
-                    textToSpeak = translatedTextResult;
-                }
-                
-                const response = await generateSpeech(textToSpeak);
-                if (response.media) {
-                    const audio = new Audio(response.media);
-                    audioRef.current = audio;
-                    
-                    audio.addEventListener('canplaythrough', () => {
-                        audio.play().catch(error => {
-                            console.error("Audio playback failed. This may be due to browser autoplay policies.", error);
-                        });
-                    });
-
-                    audio.addEventListener('error', (e) => {
-                        console.error("Error loading audio file:", e);
-                    });
-                }
-            };
-            
-            playAudio();
-
-            const timer = setTimeout(() => {
-                onClose();
-            }, 12000);
-            
-            return () => {
-              clearTimeout(timer);
-              if (audioRef.current) {
-                  audioRef.current.pause();
-                  audioRef.current = null;
-              }
-            };
-        } else {
+            // Stop any previously playing audio
             if (audioRef.current) {
                 audioRef.current.pause();
                 audioRef.current = null;
             }
-        }
-    }, [isOpen, threatDetails, onClose]);
+
+            let textToSpeak = threatDetails.riskLevel === 'Safe' 
+                ? `Analysis Complete. ${threatDetails.explanation}`
+                : `${threatDetails.riskLevel} threat detected. ${threatDetails.explanation}`;
+            
+            const selectedLanguage = localStorage.getItem('vink-language') || 'English';
+
+            if (selectedLanguage !== 'English') {
+                const translatedTextResult = await translateText({ text: textToSpeak, targetLanguage: selectedLanguage });
+                textToSpeak = translatedTextResult;
+            }
+            
+            try {
+                const response = await generateSpeech(textToSpeak);
+                if (response?.media) {
+                    const audio = new Audio(response.media);
+                    audioRef.current = audio;
+                    
+                    const playPromise = audio.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.error("Audio playback failed. This may be due to browser autoplay policies.", error);
+                        });
+                    }
+                } else {
+                     console.error("TTS generation failed, received no media.", response);
+                }
+            } catch (error) {
+                console.error("Error generating or playing speech:", error);
+            }
+        };
+        
+        playAudio();
+
+        // This cleanup function runs when the component unmounts or before the effect re-runs.
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
+            }
+        };
+    }, [isOpen, threatDetails]);
 
   const handleDetailsClick = () => {
     onClose();
