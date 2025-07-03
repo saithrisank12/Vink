@@ -1,5 +1,5 @@
 'use client';
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { 
   BarChart3, 
   ShieldAlert, 
@@ -22,6 +22,19 @@ const livePacketMessages = [
 ];
 
 export default function DashboardPage() {
+  const [livePackets, setLivePackets] = useState(482);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Fluctuate the number +/- 50 around a baseline of 480
+      const base = 480;
+      const fluctuation = Math.floor(Math.random() * 101) - 50; // -50 to +50
+      setLivePackets(base + fluctuation);
+    }, 1500); // Update every 1.5 seconds
+
+    return () => clearInterval(interval); // Cleanup on component unmount
+  }, []);
+
   return (
     <div className="w-full animate-fade-in space-y-8">
       <header>
@@ -38,7 +51,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <FeedbackTooltip message={livePacketMessages}>
           <StatCard title="Live Packets Analyzed" icon={BarChart3}>
-            <div className="text-4xl font-bold">482</div>
+            <div className="text-4xl font-bold">{livePackets}</div>
             <p className="text-xs text-muted-foreground">Packets processed per second</p>
           </StatCard>
         </FeedbackTooltip>
