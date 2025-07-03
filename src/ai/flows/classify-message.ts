@@ -46,6 +46,8 @@ Carefully analyze the following message in its original language. Do not transla
 
 Based on your analysis, classify the message's risk level. The explanation you provide must be in clear, simple English for the user. Explain why the message was classified with its given risk level and, if it is a threat, what kind of threat it is. Be concise.
 
+Crucially, if none of the red flags are detected and the message seems benign, classify it as 'Safe'. Do not speculate about potential risks or 'what ifs' if there is no direct evidence of a threat in the message.
+
 Message: {{{text}}}
 
 Respond in the required JSON format.
