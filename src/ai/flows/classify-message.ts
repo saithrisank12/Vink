@@ -22,7 +22,7 @@ const ClassifyMessageOutputSchema = z.object({
     .describe('The risk level of the message.'),
   explanation: z
     .string()
-    .describe('A clear, simple explanation for a non-technical user about why the message was classified with its given risk level. If it is a threat, explain what kind of threat it is.'),
+    .describe('A clear, simple explanation in English for a non-technical user about why the message was classified with its given risk level. If it is a threat, explain what kind of threat it is.'),
 });
 export type ClassifyMessageOutput = z.infer<typeof ClassifyMessageOutputSchema>;
 
@@ -34,17 +34,17 @@ const prompt = ai.definePrompt({
   name: 'classifyMessagePrompt',
   input: {schema: ClassifyMessageInputSchema},
   output: {schema: ClassifyMessageOutputSchema},
-  prompt: `You are VINK, a Cyber Guardian AI specializing in detecting digital threats within messages. Your goal is to protect users by analyzing text for signs of phishing, scams, malware links, or other malicious content.
+  prompt: `You are VINK, a Cyber Guardian AI specializing in detecting digital threats within messages, regardless of the language. Your goal is to protect users by analyzing text for signs of phishing, scams, malware links, or other malicious content.
 
-Carefully analyze the following message. Look for these red flags:
-- A sense of extreme urgency or threats (e.g., "account will be suspended").
-- Requests for personal information, passwords, or financial details.
-- Suspicious links that might be misspelled or use unusual domains.
-- Poor grammar, spelling mistakes, or unprofessional language.
-- Unexpected messages from supposedly known contacts or companies.
-- Offers that seem too good to be true (e.g., winning a lottery you didn't enter).
+Carefully analyze the following message in its original language. Do not translate it. Look for these universal red flags:
+- A sense of extreme urgency or threats (e.g., "account will be suspended," "immediate action required").
+- Requests for personal or financial information (passwords, social security numbers, credit card details).
+- Suspicious links that might be misspelled, use unusual domains, or employ URL shorteners to hide the true destination.
+- Poor grammar, spelling mistakes, or unprofessional language for the supposed sender (e.g., a bank or a large company).
+- Unexpected messages from supposedly known contacts or companies, especially if the request is unusual.
+- Offers that seem too good to be true (e.g., winning a lottery you didn't enter, claiming a large prize for a small fee).
 
-Based on your analysis, classify the message's risk level and provide a clear, simple explanation for the user. Be concise.
+Based on your analysis, classify the message's risk level. The explanation you provide must be in clear, simple English for the user. Explain why the message was classified with its given risk level and, if it is a threat, what kind of threat it is. Be concise.
 
 Message: {{{text}}}
 
