@@ -68,7 +68,7 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
 
             const timer = setTimeout(() => {
                 onClose();
-            }, 8000);
+            }, 12000);
             
             return () => {
               clearTimeout(timer);

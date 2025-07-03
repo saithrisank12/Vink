@@ -35,7 +35,7 @@ const prompt = ai.definePrompt({
 Only return the translated text. Do not add any extra text, preamble, or explanation.
 
 Text:
-"{{text}}"
+{{text}}
 `,
 });
 
