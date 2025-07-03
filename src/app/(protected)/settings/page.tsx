@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
 
 function SettingsToggle({ id, label, description, defaultChecked = true }: { id: string, label: string, description: string, defaultChecked?: boolean }) {
     return (
@@ -34,6 +35,17 @@ function UsageBar({ label, value, colorClass }: { label: string, value: number, 
 
 export default function SettingsPage() {
     const router = useRouter();
+    const [isDemoMode, setIsDemoMode] = useState(false);
+
+    useEffect(() => {
+        const storedValue = localStorage.getItem('vink-demo-mode');
+        setIsDemoMode(storedValue === 'true');
+    }, []);
+
+    const handleDemoModeToggle = (checked: boolean) => {
+        setIsDemoMode(checked);
+        localStorage.setItem('vink-demo-mode', String(checked));
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('vink-auth');
@@ -64,12 +76,13 @@ export default function SettingsPage() {
                             label="Auto-Block Threats"
                             description="Automatically block content identified as dangerous."
                         />
-                         <SettingsToggle 
-                            id="demo-mode"
-                            label="Demo Mode"
-                            description="Enable simulated threat alerts for demonstration."
-                            defaultChecked={false}
-                        />
+                         <div className="flex items-center justify-between space-x-2 rounded-lg border p-4 glass-card">
+                            <div className="space-y-0.5">
+                              <Label htmlFor="demo-mode" className="text-base">Demo Mode</Label>
+                              <p className="text-sm text-muted-foreground">Enable simulated threat alerts for demonstration.</p>
+                            </div>
+                            <Switch id="demo-mode" checked={isDemoMode} onCheckedChange={handleDemoModeToggle} />
+                        </div>
                     </CardContent>
                 </Card>
 

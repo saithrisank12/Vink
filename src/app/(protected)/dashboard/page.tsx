@@ -10,6 +10,8 @@ import { ThreatsChart } from '@/components/vink/dashboard/threats-chart';
 import { FeedbackTooltip } from '@/components/vink/dashboard/feedback-tooltip';
 import { NetworkStatus } from '@/components/vink/dashboard/network-status';
 import { TestLab } from '@/components/vink/settings/test-lab';
+import { ThreatAlertModal } from '@/components/vink/threat-alert-modal';
+import type { ClassifyMessageOutput } from '@/ai/flows/classify-message';
 
 const livePacketMessages = [
   "Scanning 1,240 live packets flowing through your network... No threats found.",
@@ -21,18 +23,39 @@ const livePacketMessages = [
   "All 4 connected devices are being monitored in real time.",
 ];
 
+const mockThreats: ClassifyMessageOutput[] = [
+    { riskLevel: 'Dangerous', explanation: 'A phishing link was detected trying to steal your banking credentials.' },
+    { riskLevel: 'Suspicious', explanation: 'An app tried to access your contacts without permission. Access was blocked.' },
+    { riskLevel: 'Dangerous', explanation: 'Malware detected in a downloaded file. The file has been quarantined.' },
+    { riskLevel: 'Critical', explanation: 'A potential ransomware attack was identified and neutralized.' },
+];
+
 export default function DashboardPage() {
   const [livePackets, setLivePackets] = useState(482);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState<ClassifyMessageOutput | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      // Fluctuate the number +/- 50 around a baseline of 480
       const base = 480;
-      const fluctuation = Math.floor(Math.random() * 101) - 50; // -50 to +50
+      const fluctuation = Math.floor(Math.random() * 101) - 50;
       setLivePackets(base + fluctuation);
-    }, 1500); // Update every 1.5 seconds
+    }, 1500);
 
-    return () => clearInterval(interval); // Cleanup on component unmount
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const isDemoMode = localStorage.getItem('vink-demo-mode') === 'true';
+    if (!isDemoMode) return;
+
+    const interval = setInterval(() => {
+      const randomThreat = mockThreats[Math.floor(Math.random() * mockThreats.length)];
+      setModalContent(randomThreat);
+      setIsModalOpen(true);
+    }, 12000); // every 12 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -71,7 +94,15 @@ export default function DashboardPage() {
         </FeedbackTooltip>
       </div>
 
-      <TestLab />
+      <TestLab onAnalyze={(result) => {
+        setModalContent(result);
+        setIsModalOpen(true);
+      }} />
+      <ThreatAlertModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        threatDetails={modalContent}
+      />
     </div>
   );
 }
