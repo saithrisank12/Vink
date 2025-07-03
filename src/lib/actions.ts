@@ -3,6 +3,7 @@
 import { classifyMessage, ClassifyMessageInput } from '@/ai/flows/classify-message';
 import { analyzeThreatLog } from '@/ai/flows/analyze-threat-log';
 import { generateSpeech as generateSpeechFlow } from '@/ai/flows/generate-speech';
+import { translateText as translateTextFlow, TranslateTextInput } from '@/ai/flows/translate-text';
 
 export async function classifyUserMessage(input: ClassifyMessageInput) {
   try {
@@ -34,5 +35,16 @@ export async function generateSpeech(text: string) {
     } catch (error) {
         console.error('Error generating speech:', error);
         return { media: '' };
+    }
+}
+
+export async function translateText(input: TranslateTextInput): Promise<string> {
+    try {
+        const result = await translateTextFlow(input);
+        return result.translatedText;
+    } catch (error) {
+        console.error('Error translating text:', error);
+        // Fallback to original text if translation fails
+        return input.text;
     }
 }

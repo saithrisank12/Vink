@@ -9,6 +9,16 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const languages = [
+  { value: 'English', label: 'English' },
+  { value: 'Hindi', label: 'हिन्दी' },
+  { value: 'Telugu', label: 'తెలుగు' },
+  { value: 'Malayalam', label: 'മലയാളം' },
+  { value: 'Tamil', label: 'தமிழ்' },
+  { value: 'Bengali', label: 'বাংলা' },
+];
 
 export function SignInForm() {
   const router = useRouter();
@@ -23,6 +33,10 @@ export function SignInForm() {
   const emailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (!localStorage.getItem('vink-language')) {
+      localStorage.setItem('vink-language', 'English');
+    }
+
     const handleMouseMove = (event: MouseEvent) => {
       if (document.activeElement === emailInputRef.current && emailInputRef.current) {
         const rect = emailInputRef.current.getBoundingClientRect();
@@ -113,6 +127,20 @@ export function SignInForm() {
                 {showPassword ? <EyeOff /> : <Eye />}
               </Button>
             </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="language">Language</Label>
+            <Select defaultValue={typeof window !== 'undefined' ? localStorage.getItem('vink-language') || 'English' : 'English'} onValueChange={(value) => localStorage.setItem('vink-language', value)}>
+                <SelectTrigger id="language">
+                    <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                    {languages.map(lang => (
+                        <SelectItem key={lang.value} value={lang.value}>{lang.label}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
           </div>
 
           <Button type="submit" className="w-full h-11 text-base font-bold" disabled={isLoading}>

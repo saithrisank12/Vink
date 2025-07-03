@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ClassifyMessageOutput } from '@/ai/flows/classify-message';
 import { cn } from '@/lib/utils';
-import { generateSpeech } from '@/lib/actions';
+import { generateSpeech, translateText } from '@/lib/actions';
 
 const ShieldIcon = ({ isSafe }: { isSafe: boolean }) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={cn(
@@ -49,9 +49,15 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
             }
             
             const getAudio = async () => {
-                const textToSpeak = threatDetails.riskLevel === 'Safe' 
+                let textToSpeak = threatDetails.riskLevel === 'Safe' 
                     ? `Analysis Complete. ${threatDetails.explanation}`
                     : `${threatDetails.riskLevel} threat detected. ${threatDetails.explanation}`;
+                
+                const selectedLanguage = localStorage.getItem('vink-language') || 'English';
+
+                if (selectedLanguage !== 'English') {
+                    textToSpeak = await translateText({ text: textToSpeak, targetLanguage: selectedLanguage });
+                }
                 
                 const response = await generateSpeech(textToSpeak);
                 if (response.media) {
