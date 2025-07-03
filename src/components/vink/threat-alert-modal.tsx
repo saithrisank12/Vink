@@ -10,10 +10,11 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from '@/components/ui/alert-dialog';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ClassifyMessageOutput } from '@/ai/flows/classify-message';
 import { cn } from '@/lib/utils';
+import { generateSpeech } from '@/lib/actions';
 
 const ShieldIcon = ({ isSafe }: { isSafe: boolean }) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={cn(
@@ -35,9 +36,10 @@ type ThreatAlertModalProps = {
 
 export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlertModalProps) {
     const router = useRouter();
+    const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
     useEffect(() => {
-        if (isOpen) {
+        if (isOpen && threatDetails) {
             try {
                 if (window.navigator.vibrate) {
                     window.navigator.vibrate(200);
@@ -45,13 +47,29 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
             } catch (e) {
                 console.log("Vibration not supported");
             }
+            
+            const getAudio = async () => {
+                const textToSpeak = threatDetails.riskLevel === 'Safe' 
+                    ? `Analysis Complete. ${threatDetails.explanation}`
+                    : `${threatDetails.riskLevel} threat detected. ${threatDetails.explanation}`;
+                
+                const response = await generateSpeech(textToSpeak);
+                if (response.media) {
+                    setAudioUrl(response.media);
+                }
+            };
+            getAudio();
 
             const timer = setTimeout(() => {
                 onClose();
             }, 8000);
-            return () => clearTimeout(timer);
+            
+            return () => {
+              clearTimeout(timer);
+              setAudioUrl(null);
+            };
         }
-    }, [isOpen, onClose]);
+    }, [isOpen, threatDetails, onClose]);
 
   const handleDetailsClick = () => {
     onClose();
@@ -82,6 +100,7 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
             <AlertDialogAction onClick={handleDetailsClick}>Details</AlertDialogAction>
           )}
         </AlertDialogFooter>
+        {audioUrl && <audio src={audioUrl} autoPlay hidden />}
       </AlertDialogContent>
     </AlertDialog>
   );

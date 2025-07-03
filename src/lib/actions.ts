@@ -2,6 +2,7 @@
 
 import { classifyMessage, ClassifyMessageInput } from '@/ai/flows/classify-message';
 import { analyzeThreatLog } from '@/ai/flows/analyze-threat-log';
+import { generateSpeech as generateSpeechFlow } from '@/ai/flows/generate-speech';
 
 export async function classifyUserMessage(input: ClassifyMessageInput) {
   try {
@@ -23,5 +24,15 @@ export async function getThreatSummary() {
     } catch (error) {
         console.error('Error analyzing threat log:', error);
         return 'Could not retrieve threat summary at this time.'
+    }
+}
+
+export async function generateSpeech(text: string) {
+    try {
+        const result = await generateSpeechFlow(text);
+        return result;
+    } catch (error) {
+        console.error('Error generating speech:', error);
+        return { media: '' };
     }
 }
