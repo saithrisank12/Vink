@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Send } from 'lucide-react';
 import { classifyUserMessage } from '@/lib/actions';
 import type { ClassifyMessageOutput } from '@/ai/flows/classify-message';
+import type { ThreatLogEntry } from '@/lib/types';
 
 type TestLabProps = {
   onAnalyze: (result: ClassifyMessageOutput) => void;
@@ -23,6 +24,33 @@ export function TestLab({ onAnalyze }: TestLabProps) {
     setIsLoading(true);
     const result = await classifyUserMessage({ text: message });
     setIsLoading(false);
+
+    if (result.riskLevel !== 'Safe') {
+      const newThreat: ThreatLogEntry = {
+        id: `threat-${Date.now()}`,
+        timestamp: new Date(),
+        sourceIp: 'N/A (Test Lab)',
+        attackType: 'User Submitted Analysis',
+        confidence: 0.99,
+        level: result.riskLevel,
+        description: result.explanation,
+      };
+
+      try {
+        const storedThreatsRaw = localStorage.getItem('vink-threats') || '[]';
+        const existingThreats: ThreatLogEntry[] = JSON.parse(storedThreatsRaw, (key, value) => {
+          if (key === 'timestamp' && typeof value === 'string') {
+            return new Date(value);
+          }
+          return value;
+        });
+        
+        const updatedThreats = [newThreat, ...existingThreats];
+        localStorage.setItem('vink-threats', JSON.stringify(updatedThreats));
+      } catch (error) {
+        console.error("Failed to update threats in localStorage", error);
+      }
+    }
 
     onAnalyze(result);
   };

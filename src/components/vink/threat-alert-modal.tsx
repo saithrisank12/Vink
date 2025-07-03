@@ -11,6 +11,7 @@ import {
   AlertDialogCancel,
 } from '@/components/ui/alert-dialog';
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import type { ClassifyMessageOutput } from '@/ai/flows/classify-message';
 import { cn } from '@/lib/utils';
 
@@ -33,7 +34,8 @@ type ThreatAlertModalProps = {
 };
 
 export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlertModalProps) {
-    
+    const router = useRouter();
+
     useEffect(() => {
         if (isOpen) {
             try {
@@ -51,10 +53,16 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
         }
     }, [isOpen, onClose]);
 
+  const handleDetailsClick = () => {
+    onClose();
+    router.push('/threat-log');
+  };
+
   if (!threatDetails) return null;
 
   const isSafe = threatDetails.riskLevel === 'Safe';
   const titleText = isSafe ? "Analysis Complete: It's Safe" : `${threatDetails.riskLevel} Threat Detected!`;
+  const showDetailsButton = threatDetails.riskLevel !== 'Safe';
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
@@ -70,7 +78,9 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
         </AlertDialogHeader>
         <AlertDialogFooter className="sm:justify-center gap-2">
           <AlertDialogCancel onClick={onClose}>Dismiss</AlertDialogCancel>
-          <AlertDialogAction>Details</AlertDialogAction>
+          {showDetailsButton && (
+            <AlertDialogAction onClick={handleDetailsClick}>Details</AlertDialogAction>
+          )}
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

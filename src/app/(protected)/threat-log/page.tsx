@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { ThreatCard } from '@/components/vink/threat-log/threat-card';
 import type { ThreatLogEntry, ThreatLevel } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ const generateMockData = (): ThreatLogEntry[] => {
     const level = levels[Math.floor(Math.random() * 4)];
     data.push({
       id: `threat-${i}`,
-      timestamp: new Date(Date.now() - i * 3 * 60 * 60 * 1000),
+      timestamp: new Date(Date.now() - (i + 1) * 3 * 60 * 60 * 1000), // Push mock data further back
       sourceIp: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
       attackType: attackTypes[Math.floor(Math.random() * attackTypes.length)],
       confidence: Math.random(),
@@ -28,7 +28,28 @@ const filters: ThreatLevel[] = ['Critical', 'Dangerous', 'Suspicious', 'Safe'];
 
 export default function ThreatLogPage() {
   const [activeFilters, setActiveFilters] = useState<Set<ThreatLevel>>(new Set(filters));
-  const mockData = useMemo(() => generateMockData(), []);
+  const [allThreats, setAllThreats] = useState<ThreatLogEntry[]>([]);
+
+  useEffect(() => {
+    const mockData = generateMockData();
+    let storedThreats: ThreatLogEntry[] = [];
+    try {
+      const storedThreatsRaw = localStorage.getItem('vink-threats') || '[]';
+      storedThreats = JSON.parse(storedThreatsRaw, (key, value) => {
+        if (key === 'timestamp' && typeof value === 'string') {
+          return new Date(value);
+        }
+        return value;
+      });
+    } catch (error) {
+      console.error("Failed to parse threats from localStorage", error);
+    }
+
+    const combinedData = [...storedThreats, ...mockData]
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+      
+    setAllThreats(combinedData);
+  }, []);
 
   const toggleFilter = (filter: ThreatLevel) => {
     setActiveFilters(prev => {
@@ -42,7 +63,7 @@ export default function ThreatLogPage() {
     });
   };
 
-  const filteredData = mockData.filter(entry => activeFilters.has(entry.level));
+  const filteredData = allThreats.filter(entry => activeFilters.has(entry.level));
 
   return (
     <div className="w-full animate-fade-in space-y-8">
