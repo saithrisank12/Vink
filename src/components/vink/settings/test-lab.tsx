@@ -61,6 +61,7 @@ export function TestLab({ onAnalyze }: TestLabProps) {
         <CardTitle>AI Test Lab</CardTitle>
         <CardDescription>
           Paste any suspicious text, email, or link below to see VINK's AI analysis in action.
+          Remember, AI can make mistakes, so it's always wise to double-check important messages.
         </CardDescription>
       </CardHeader>
       <CardContent>
