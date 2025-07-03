@@ -10,7 +10,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from '@/components/ui/alert-dialog';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ClassifyMessageOutput } from '@/ai/flows/classify-message';
 import { cn } from '@/lib/utils';
@@ -36,19 +36,11 @@ type ThreatAlertModalProps = {
 
 export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlertModalProps) {
     const router = useRouter();
-    const [audioUrl, setAudioUrl] = useState<string | null>(null);
-    const audioRef = useRef<HTMLAudioElement>(null);
-
-    useEffect(() => {
-      if (audioUrl && audioRef.current) {
-        audioRef.current.play().catch(error => {
-          console.error("Audio playback failed:", error);
-        });
-      }
-    }, [audioUrl]);
 
     useEffect(() => {
         if (isOpen && threatDetails) {
+            let audio: HTMLAudioElement | null = null;
+            
             try {
                 if (window.navigator.vibrate) {
                     window.navigator.vibrate(200);
@@ -57,7 +49,7 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
                 console.log("Vibration not supported");
             }
             
-            const getAudio = async () => {
+            const playAudio = async () => {
                 let textToSpeak = threatDetails.riskLevel === 'Safe' 
                     ? `Analysis Complete. ${threatDetails.explanation}`
                     : `${threatDetails.riskLevel} threat detected. ${threatDetails.explanation}`;
@@ -71,10 +63,14 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
                 
                 const response = await generateSpeech(textToSpeak);
                 if (response.media) {
-                    setAudioUrl(response.media);
+                    audio = new Audio(response.media);
+                    audio.play().catch(error => {
+                        console.error("Audio playback failed:", error);
+                    });
                 }
             };
-            getAudio();
+            
+            playAudio();
 
             const timer = setTimeout(() => {
                 onClose();
@@ -82,7 +78,10 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
             
             return () => {
               clearTimeout(timer);
-              setAudioUrl(null);
+              if (audio) {
+                  audio.pause();
+                  audio.src = '';
+              }
             };
         }
     }, [isOpen, threatDetails, onClose]);
@@ -116,7 +115,6 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
             <AlertDialogAction onClick={handleDetailsClick}>Details</AlertDialogAction>
           )}
         </AlertDialogFooter>
-        {audioUrl && <audio ref={audioRef} src={audioUrl} hidden />}
       </AlertDialogContent>
     </AlertDialog>
   );
