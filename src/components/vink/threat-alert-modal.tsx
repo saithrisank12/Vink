@@ -10,7 +10,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from '@/components/ui/alert-dialog';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ClassifyMessageOutput } from '@/ai/flows/classify-message';
 import { cn } from '@/lib/utils';
@@ -37,6 +37,15 @@ type ThreatAlertModalProps = {
 export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlertModalProps) {
     const router = useRouter();
     const [audioUrl, setAudioUrl] = useState<string | null>(null);
+    const audioRef = useRef<HTMLAudioElement>(null);
+
+    useEffect(() => {
+      if (audioUrl && audioRef.current) {
+        audioRef.current.play().catch(error => {
+          console.error("Audio playback failed:", error);
+        });
+      }
+    }, [audioUrl]);
 
     useEffect(() => {
         if (isOpen && threatDetails) {
@@ -106,7 +115,7 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
             <AlertDialogAction onClick={handleDetailsClick}>Details</AlertDialogAction>
           )}
         </AlertDialogFooter>
-        {audioUrl && <audio src={audioUrl} autoPlay hidden />}
+        <audio ref={audioRef} src={audioUrl || ''} hidden />
       </AlertDialogContent>
     </AlertDialog>
   );
