@@ -29,6 +29,11 @@ export async function getThreatSummary() {
 }
 
 export async function generateSpeech(text: string) {
+    if (!text?.trim()) {
+        console.warn('generateSpeech called with empty text. Skipping TTS generation.');
+        return { media: '' };
+    }
+    
     try {
         const result = await generateSpeechFlow(text);
         return result;
