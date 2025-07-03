@@ -65,7 +65,8 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
                 const selectedLanguage = localStorage.getItem('vink-language') || 'English';
 
                 if (selectedLanguage !== 'English') {
-                    textToSpeak = await translateText({ text: textToSpeak, targetLanguage: selectedLanguage });
+                    const translatedTextResult = await translateText({ text: textToSpeak, targetLanguage: selectedLanguage });
+                    textToSpeak = translatedTextResult
                 }
                 
                 const response = await generateSpeech(textToSpeak);
@@ -115,7 +116,7 @@ export function ThreatAlertModal({ isOpen, onClose, threatDetails }: ThreatAlert
             <AlertDialogAction onClick={handleDetailsClick}>Details</AlertDialogAction>
           )}
         </AlertDialogFooter>
-        <audio ref={audioRef} src={audioUrl || ''} hidden />
+        {audioUrl && <audio ref={audioRef} src={audioUrl} hidden />}
       </AlertDialogContent>
     </AlertDialog>
   );
