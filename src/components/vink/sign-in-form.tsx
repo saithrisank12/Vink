@@ -14,6 +14,7 @@ export function SignInForm() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -55,6 +56,10 @@ export function SignInForm() {
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   }
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(e.target.value);
+  };
 
   return (
     <motion.div
@@ -113,6 +118,19 @@ export function SignInForm() {
                 {showPassword ? <EyeOff /> : <Eye />}
               </Button>
             </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="Enter your phone number"
+              value={phone}
+              onChange={handlePhoneChange}
+              onFocus={() => setIsHiding(false)}
+              required
+            />
           </div>
           
           <Button type="submit" className="w-full h-11 text-base font-bold" disabled={isLoading}>
