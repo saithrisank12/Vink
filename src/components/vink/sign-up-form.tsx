@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -209,7 +208,8 @@ export function SignUpForm() {
                   placeholder="123456"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  onFocus={() => setIsHiding(false)}
+                  onFocus={() => setIsHiding(true)}
+                  onBlur={() => setIsHiding(false)}
                   required
                   className="h-12 text-base text-center tracking-[0.5em]"
                 />
