@@ -47,12 +47,12 @@ export function SignUpForm() {
     setPhoneError('');
 
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError('Please enter a valid email address.');
+      setEmailError('Please enter a valid email address (e.g., user@example.com).');
       isValid = false;
     }
 
     if (!/^\d{10}$/.test(phone)) {
-        setPhoneError('Please enter a valid 10-digit phone number.');
+        setPhoneError('Please enter a valid 10-digit phone number (e.g., 1234567890).');
         isValid = false;
     }
 

@@ -1,3 +1,4 @@
+
 'use client';
 import { Suspense, useState, useEffect } from 'react';
 import { 
@@ -37,9 +38,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const base = 480;
-      const fluctuation = Math.floor(Math.random() * 101) - 50;
-      setLivePackets(base + fluctuation);
+      // Add a random positive number to the current value so it only increases
+      setLivePackets(prevPackets => prevPackets + Math.floor(Math.random() * 20) + 1);
     }, 1500);
 
     return () => clearInterval(interval);
@@ -74,7 +74,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <FeedbackTooltip message={livePacketMessages}>
           <StatCard title="Live Packets Analyzed" icon={BarChart3}>
-            <div className="text-4xl font-bold">{livePackets}</div>
+            <div className="text-4xl font-bold">{livePackets.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">Packets processed per second</p>
           </StatCard>
         </FeedbackTooltip>
