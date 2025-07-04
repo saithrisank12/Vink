@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -42,7 +43,6 @@ export function SignUpForm() {
 
   const validateForm = () => {
     let isValid = true;
-    // Basic email validation regex
     if (!/\S+@\S+\.\S+/.test(email)) {
       setEmailError('Please enter a valid email address.');
       isValid = false;
@@ -50,7 +50,6 @@ export function SignUpForm() {
       setEmailError('');
     }
 
-    // Basic 10-digit phone number validation
     if (!/^\d{10}$/.test(phone)) {
         setPhoneError('Please enter a valid 10-digit phone number.');
         isValid = false;
@@ -67,7 +66,6 @@ export function SignUpForm() {
         return;
     }
     setIsLoading(true);
-    // Simulate API call for signup
     setTimeout(() => {
       localStorage.setItem('vink-auth', 'true');
       router.push('/dashboard');
