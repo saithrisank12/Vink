@@ -14,8 +14,11 @@ export function SignUpForm() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
 
   const [eyeTarget, setEyeTarget] = useState({ x: 0.5, y: 0.5 });
   const [isHiding, setIsHiding] = useState(false);
@@ -37,8 +40,32 @@ export function SignUpForm() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  const validateForm = () => {
+    let isValid = true;
+    // Basic email validation regex
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError('Please enter a valid email address.');
+      isValid = false;
+    } else {
+      setEmailError('');
+    }
+
+    // Basic 10-digit phone number validation
+    if (!/^\d{10}$/.test(phone)) {
+        setPhoneError('Please enter a valid 10-digit phone number.');
+        isValid = false;
+    } else {
+        setPhoneError('');
+    }
+
+    return isValid;
+  };
+
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) {
+        return;
+    }
     setIsLoading(true);
     // Simulate API call for signup
     setTimeout(() => {
@@ -47,15 +74,6 @@ export function SignUpForm() {
     }, 1500);
   };
   
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setEmail(value);
-  }
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  }
-
   return (
     <motion.div
       className="w-full max-w-sm"
@@ -78,11 +96,15 @@ export function SignUpForm() {
               type="email"
               placeholder="yourname@example.com"
               value={email}
-              onChange={handleEmailChange}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (emailError) setEmailError('');
+              }}
               onFocus={() => setIsHiding(false)}
               required
               className="h-12 text-base"
             />
+            {emailError && <p className="text-sm text-destructive mt-1">{emailError}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
@@ -92,7 +114,7 @@ export function SignUpForm() {
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 value={password}
-                onChange={handlePasswordChange}
+                onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setIsHiding(true)}
                 onBlur={() => setIsHiding(false)}
                 required
@@ -109,6 +131,24 @@ export function SignUpForm() {
                 {showPassword ? <EyeOff /> : <Eye />}
               </Button>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="1234567890"
+              value={phone}
+              onChange={(e) => {
+                setPhone(e.target.value);
+                if (phoneError) setPhoneError('');
+              }}
+              onFocus={() => setIsHiding(false)}
+              required
+              className="h-12 text-base"
+            />
+             {phoneError && <p className="text-sm text-destructive mt-1">{phoneError}</p>}
           </div>
 
           <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isLoading}>
