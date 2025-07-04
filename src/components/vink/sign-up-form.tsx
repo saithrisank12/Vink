@@ -43,18 +43,17 @@ export function SignUpForm() {
 
   const validateForm = () => {
     let isValid = true;
+    setEmailError('');
+    setPhoneError('');
+
     if (!/\S+@\S+\.\S+/.test(email)) {
       setEmailError('Please enter a valid email address.');
       isValid = false;
-    } else {
-      setEmailError('');
     }
 
     if (!/^\d{10}$/.test(phone)) {
         setPhoneError('Please enter a valid 10-digit phone number.');
         isValid = false;
-    } else {
-        setPhoneError('');
     }
 
     return isValid;
@@ -94,10 +93,7 @@ export function SignUpForm() {
               type="email"
               placeholder="yourname@example.com"
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (emailError) setEmailError('');
-              }}
+              onChange={(e) => setEmail(e.target.value)}
               onFocus={() => setIsHiding(false)}
               required
               className="h-12 text-base"
@@ -138,10 +134,7 @@ export function SignUpForm() {
               type="tel"
               placeholder="1234567890"
               value={phone}
-              onChange={(e) => {
-                setPhone(e.target.value);
-                if (phoneError) setPhoneError('');
-              }}
+              onChange={(e) => setPhone(e.target.value)}
               onFocus={() => setIsHiding(false)}
               required
               className="h-12 text-base"
